@@ -1,0 +1,117 @@
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+local TextChatService = game:GetService("TextChatService")
+local CoreGui = game:GetService("CoreGui")
+
+-- Arayüz Oluşturma
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "VisualFakeChatGUI"
+ScreenGui.ResetOnSpawn = false
+
+-- Executor uyumluluğu için CoreGui kontrolü
+pcall(function()
+    ScreenGui.Parent = CoreGui
+end)
+if not ScreenGui.Parent then
+    ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+end
+
+-- Ana Panel Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 320, 0, 230)
+Frame.Position = UDim2.new(0.5, -160, 0.5, -115)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true -- Menüyü ekranda sürükleyebilirsin
+Frame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = Frame
+
+-- Başlık
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.Text = "Visual Chat Spoofer"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.SourceSansBold
+Title.BackgroundTransparency = 1
+Title.Parent = Frame
+
+-- 1. Input: Oyuncu Adı
+local UserInput = Instance.new("TextBox")
+UserInput.Size = UDim2.new(0.9, 0, 0, 38)
+UserInput.Position = UDim2.new(0.05, 0, 0.22, 0)
+UserInput.PlaceholderText = "Hedef Oyuncu Adı..."
+UserInput.Text = ""
+UserInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+UserInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+UserInput.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+UserInput.Font = Enum.Font.SourceSans
+UserInput.TextSize = 15
+UserInput.Parent = Frame
+
+local UserCorner = Instance.new("UICorner")
+UserCorner.CornerRadius = UDim.new(0, 8)
+UserCorner.Parent = UserInput
+
+-- 2. Input: Yazacağı Mesaj
+local MsgInput = Instance.new("TextBox")
+MsgInput.Size = UDim2.new(0.9, 0, 0, 38)
+MsgInput.Position = UDim2.new(0.05, 0, 0.43, 0)
+MsgInput.PlaceholderText = "Yazacağı Mesaj..."
+MsgInput.Text = ""
+MsgInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+MsgInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+MsgInput.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+MsgInput.Font = Enum.Font.SourceSans
+MsgInput.TextSize = 15
+MsgInput.Parent = Frame
+
+local MsgCorner = Instance.new("UICorner")
+MsgCorner.CornerRadius = UDim.new(0, 8)
+MsgCorner.Parent = MsgInput
+
+-- Gönder/Onayla Butonu
+local SendBtn = Instance.new("TextButton")
+SendBtn.Size = UDim2.new(0.9, 0, 0, 42)
+SendBtn.Position = UDim2.new(0.05, 0, 0.68, 0)
+SendBtn.Text = "Onayla ve Gönder"
+SendBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SendBtn.BackgroundColor3 = Color3.fromRGB(0, 122, 255)
+SendBtn.Font = Enum.Font.SourceSansBold
+SendBtn.TextSize = 16
+SendBtn.Parent = Frame
+
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 8)
+BtnCorner.Parent = SendBtn
+
+-- Mesaj Gönderme Mantığı (Visual / Client-Side)
+SendBtn.MouseButton1Click:Connect(function()
+    local targetName = UserInput.Text
+    local targetMessage = MsgInput.Text
+
+    if targetName ~= "" and targetMessage ~= "" then
+        -- Yeni Roblox TextChatService kontrolü
+        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+            local generalChannel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+            if generalChannel then
+                generalChannel:DisplaySystemMessage("<font color='#FFFFFF'><b>[" .. targetName .. "]:</b> " .. targetMessage .. "</font>")
+            end
+        else
+            -- Eski Roblox Chat Sistemi kontrolü
+            pcall(function()
+                StarterGui:SetCore("ChatMakeSystemMessage", {
+                    Text = "[" .. targetName .. "]: " .. targetMessage,
+                    Color = Color3.fromRGB(255, 255, 255),
+                    Font = Enum.Font.SourceSansBold,
+                    TextSize = 18
+                })
+            end)
+        end
+        MsgInput.Text = "" -- Mesaj yazılan kutuyu temizler
+    end
+end)
